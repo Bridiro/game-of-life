@@ -1,11 +1,168 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f1f1f1;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-form {
-    padding: 16px;
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.canvas-container {
+    border: 2px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+#gameCanvas {
+    display: block;
+    cursor: crosshair;
+}
+
+.controls {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 800px;
+}
+
+.control-group {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-width: 200px;
+}
+
+.control-group h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:active {
+    background-color: #3e8e41;
+}
+
+#playPause {
+    background-color: #2196F3;
+}
+
+#playPause:hover {
+    background-color: #1976D2;
+}
+
+#step {
+    background-color: #FF9800;
+}
+
+#step:hover {
+    background-color: #E68900;
+}
+
+#randomize {
+    background-color: #9C27B0;
+}
+
+#randomize:hover {
+    background-color: #7B1FA2;
+}
+
+#clear {
+    background-color: #f44336;
+}
+
+#clear:hover {
+    background-color: #d32f2f;
+}
+
+#resize {
+    background-color: #607D8B;
+}
+
+#resize:hover {
+    background-color: #455A64;
+}
+
+label {
+    display: block;
+    margin: 10px 0;
+    color: #333;
+    font-weight: bold;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin: 5px 0;
+}
+
+input[type="number"] {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+#speedValue {
+    display: inline-block;
+    min-width: 30px;
+    text-align: center;
+    font-weight: normal;
+    color: #666;
+}
+
+p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .control-group {
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        height: auto;
+    }
 }

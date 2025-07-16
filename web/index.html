@@ -2,42 +2,59 @@
     <head>
         <meta charset="UTF-8" />
         <title>Game of Life</title>
-
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <canvas id="triangle" width="400" height="400"> </canvas>
-
-        <form id="color-changer">
-            <input
-                type="number"
-                id="red"
-                name="color"
-                placeholder="Red"
-                value="23"
-                min="0"
-                max="255"
-                />
-            <input
-                type="number"
-                id="green"
-                name="color"
-                placeholder="Green"
-                value="22"
-                min="0"
-                max="255"
-                />
-            <input
-                type="number"
-                id="blue"
-                name="color"
-                placeholder="Blue"
-                value="243"
-                min="0"
-                max="255"
-                />
-            <input type="submit" value="Change color" />
-        </form>
+        <div class="container">
+            <h1>Conway's Game of Life</h1>
+            
+            <div class="canvas-container">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <h3>Simulation Controls</h3>
+                    <button id="playPause">Play</button>
+                    <button id="step">Step</button>
+                    <button id="randomize">Randomize</button>
+                    <button id="clear">Clear</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Starting Patterns</h3>
+                    <button id="glider">Glider</button>
+                    <button id="oscillator">Blinker</button>
+                    <button id="beacon">Beacon</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Parameters</h3>
+                    <label for="speed">Speed (ms): 
+                        <input type="range" id="speed" min="10" max="1000" value="100">
+                        <span id="speedValue">100</span>
+                    </label>
+                    
+                    <label for="gridWidth">Grid Width: 
+                        <input type="number" id="gridWidth" min="10" max="200" value="100">
+                    </label>
+                    
+                    <label for="gridHeight">Grid Height: 
+                        <input type="number" id="gridHeight" min="10" max="150" value="75">
+                    </label>
+                    
+                    <button id="resize">Resize Grid</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Instructions</h3>
+                    <p>Click on the canvas to add live cells</p>
+                    <p>The grid wraps around at the edges</p>
+                    <p>Use the controls to play, pause, step, or randomize</p>
+                    <p>Try the starting patterns for interesting formations</p>
+                </div>
+            </div>
+        </div>
 
         <script type="module" src="../pkg/game_of_life.js"></script>
         <script type="module" src="script.js"></script>
