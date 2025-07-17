@@ -1,4 +1,4 @@
-import init, { GameOfLife } from "../pkg/game_of_life.js";
+import init, { GameOfLife } from "./pkg/game_of_life.js";
 
 const CANVAS_ID = "gameCanvas";
 let gameOfLife = null;
@@ -131,6 +131,50 @@ function loadBeacon() {
     }
 }
 
+function loadToad() {
+    if (!gameOfLife) return;
+    
+    try {
+        gameOfLife.load_toad();
+        gameOfLife.render();
+    } catch (error) {
+        console.error("Error loading toad:", error);
+    }
+}
+
+function loadSpaceship() {
+    if (!gameOfLife) return;
+    
+    try {
+        gameOfLife.load_spaceship();
+        gameOfLife.render();
+    } catch (error) {
+        console.error("Error loading spaceship:", error);
+    }
+}
+
+function loadPulsar() {
+    if (!gameOfLife) return;
+    
+    try {
+        gameOfLife.load_pulsar();
+        gameOfLife.render();
+    } catch (error) {
+        console.error("Error loading pulsar:", error);
+    }
+}
+
+function loadGliderGun() {
+    if (!gameOfLife) return;
+    
+    try {
+        gameOfLife.load_glider_gun();
+        gameOfLife.render();
+    } catch (error) {
+        console.error("Error loading glider gun:", error);
+    }
+}
+
 function resize() {
     if (!gameOfLife) return;
     
@@ -162,8 +206,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("resize").addEventListener("click", resize);
     
     document.getElementById("glider").addEventListener("click", loadGlider);
-    document.getElementById("oscillator").addEventListener("click", loadOscillator);
+    document.getElementById("blinker").addEventListener("click", loadOscillator);
     document.getElementById("beacon").addEventListener("click", loadBeacon);
+    document.getElementById("toad").addEventListener("click", loadToad);
+    document.getElementById("spaceship").addEventListener("click", loadSpaceship);
+    document.getElementById("pulsar").addEventListener("click", loadPulsar);
+    document.getElementById("gliderGun").addEventListener("click", loadGliderGun);
     
     const speedSlider = document.getElementById("speed");
     const speedValue = document.getElementById("speedValue");

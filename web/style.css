@@ -56,6 +56,31 @@ h1 {
     padding-bottom: 5px;
 }
 
+.pattern-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.pattern-buttons button {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    background-color: #673AB7;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.pattern-buttons button:hover {
+    background-color: #5E35B1;
+}
+
+.pattern-buttons button:active {
+    background-color: #512DA8;
+}
+
 button {
     background-color: #4CAF50;
     color: white;

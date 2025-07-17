@@ -2,6 +2,9 @@
 name = "game-of-life"
 version = "0.1.0"
 edition = "2024"
+description = "Conway's Game of Life implemented in Rust and WebAssembly with GPU rendering"
+repository = "https://github.com/Bridiro/game-of-life"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]
