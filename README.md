@@ -23,7 +23,7 @@ A high-performance implementation of Conway's Game of Life using Rust, WebAssemb
 
 ## Live Demo
 
-Visit the live demo: [https://bridiro.github.io/game-of-life/](https://bridiro.github.io/game-of-life/)
+Visit the live demo: [https://game-of-life.alebridi.it](https://game-of-life.alebridi.it/)
 
 ## Local Development
 
