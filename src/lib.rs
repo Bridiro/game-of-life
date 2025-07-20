@@ -1,5 +1,5 @@
-use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 use web_sys::{WebGlBuffer, WebGlFramebuffer, WebGlProgram, WebGlRenderingContext, WebGlTexture};
 
 mod patterns;
@@ -292,7 +292,7 @@ impl GameOfLife {
         // Read current cell state first
         let current_state = self.get_cell_state(x, y)?;
         let new_state = if current_state > 128 { 0u8 } else { 255u8 };
-        
+
         self.set_cell(x, y, new_state)?;
         Ok(())
     }

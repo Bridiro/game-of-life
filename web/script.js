@@ -103,7 +103,8 @@ function getCanvasCoordinates(canvas, clientX, clientY) {
     const gridHeight = parseInt(document.getElementById("gridHeight").value);
     
     const cellX = Math.floor((x / canvas.width) * gridWidth);
-    const cellY = Math.floor((y / canvas.height) * gridHeight);
+    // Fix Y-axis inversion - flip the Y coordinate
+    const cellY = gridHeight - 1 - Math.floor((y / canvas.height) * gridHeight);
     
     return { cellX, cellY };
 }
@@ -316,8 +317,9 @@ function resizeGrid() {
     const gridWidth = parseInt(document.getElementById("gridWidth").value);
     const gridHeight = parseInt(document.getElementById("gridHeight").value);
     
-    if (!gameOfLife || gridWidth < 50 || gridHeight < 50 || gridWidth > 500 || gridHeight > 500) {
-        alert("Grid dimensions must be between 50 and 500");
+    // Updated limits: 10 minimum for usability, 2000 maximum for WebGL texture limits and performance
+    if (!gameOfLife || gridWidth < 10 || gridHeight < 10 || gridWidth > 2000 || gridHeight > 2000) {
+        alert("Grid dimensions must be between 10 and 2000\n\nNote: Very large grids (>1000) may impact performance depending on your hardware.");
         return;
     }
     

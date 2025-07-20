@@ -13,7 +13,8 @@ impl TextureManager {
     }
 
     pub fn upload_data(&self, texture: &WebGlTexture, data: &[u8]) -> Result<(), JsValue> {
-        self.gl.bind_texture(WebGlRenderingContext::TEXTURE_2D, Some(texture));
+        self.gl
+            .bind_texture(WebGlRenderingContext::TEXTURE_2D, Some(texture));
 
         let result = self
             .gl
@@ -34,7 +35,8 @@ impl TextureManager {
         }
 
         self.set_texture_parameters();
-        self.gl.bind_texture(WebGlRenderingContext::TEXTURE_2D, None);
+        self.gl
+            .bind_texture(WebGlRenderingContext::TEXTURE_2D, None);
 
         Ok(())
     }
@@ -45,7 +47,7 @@ impl TextureManager {
         for &(x, y) in positions {
             if x < self.width && y < self.height {
                 let index = ((y * self.width + x) * 4) as usize;
-                data[index] = 255;     // R
+                data[index] = 255; // R
                 data[index + 1] = 255; // G
                 data[index + 2] = 255; // B
                 data[index + 3] = 255; // A
@@ -75,8 +77,15 @@ impl TextureManager {
         data
     }
 
-    pub fn add_cells_in_area(&self, texture: &WebGlTexture, center_x: u32, center_y: u32, radius: u32) -> Result<(), JsValue> {
-        self.gl.bind_texture(WebGlRenderingContext::TEXTURE_2D, Some(texture));
+    pub fn add_cells_in_area(
+        &self,
+        texture: &WebGlTexture,
+        center_x: u32,
+        center_y: u32,
+        radius: u32,
+    ) -> Result<(), JsValue> {
+        self.gl
+            .bind_texture(WebGlRenderingContext::TEXTURE_2D, Some(texture));
 
         let data = [255u8, 255, 255, 255];
 
