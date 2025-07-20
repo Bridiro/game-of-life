@@ -278,7 +278,7 @@ impl GameOfLife {
 
         self.texture_manager = TextureManager::new(self.gl.clone(), width, height);
 
-        self.randomize()?;
+        self.clear()?;
 
         Ok(())
     }

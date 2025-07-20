@@ -17,6 +17,13 @@ let isDrawing = false;
 let lastDrawPos = null;
 let brushSize = 3;
 
+let previewCanvas = null;
+let previewCtx = null;
+let isPreviewActive = false;
+
+let lastValidGridWidth = 200;
+let lastValidGridHeight = 150;
+
 async function run() {
     await init();
     
@@ -30,9 +37,14 @@ async function run() {
     try {
         gameOfLife = new GameOfLife(CANVAS_ID, gridWidth, gridHeight);
         console.log("Game of Life created successfully");
+        
+        lastValidGridWidth = gridWidth;
+        lastValidGridHeight = gridHeight;
+        
         setupEventListeners();
         gameOfLife.render();
         updateStats();
+        createPreviewCanvas();
     } catch (error) {
         console.error("Failed to initialize Game of Life:", error);
     }
@@ -40,6 +52,10 @@ async function run() {
 
 function setupEventListeners() {
     const canvas = document.getElementById(CANVAS_ID);
+    
+    canvas.addEventListener("click", () => {
+        canvas.focus();
+    });
     
     canvas.addEventListener("mousedown", handleCanvasMouseDown);
     canvas.addEventListener("mousemove", handleCanvasMouseMove);
@@ -63,6 +79,20 @@ function setupEventListeners() {
     
     document.getElementById("applyGridSize").addEventListener("click", resizeGrid);
     
+    document.getElementById("gridWidth").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            resizeGrid();
+        }
+    });
+    
+    document.getElementById("gridHeight").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            resizeGrid();
+        }
+    });
+    
     document.getElementById("glider").addEventListener("click", loadGlider);
     document.getElementById("blinker").addEventListener("click", loadBlinker);
     document.getElementById("beacon").addEventListener("click", loadBeacon);
@@ -83,6 +113,67 @@ function setupEventListeners() {
         brushSize = parseInt(e.target.value);
         document.getElementById("brushSizeValue").textContent = brushSize;
     });
+    
+    window.addEventListener("resize", () => {
+        if (previewCanvas) {
+            const canvas = document.getElementById(CANVAS_ID);
+            previewCanvas.style.top = canvas.offsetTop + 'px';
+            previewCanvas.style.left = canvas.offsetLeft + 'px';
+        }
+    });
+}
+
+function createPreviewCanvas() {
+    const canvas = document.getElementById(CANVAS_ID);
+    const container = canvas.parentElement;
+    
+    previewCanvas = document.createElement('canvas');
+    previewCanvas.id = 'previewCanvas';
+    previewCanvas.width = canvas.width;
+    previewCanvas.height = canvas.height;
+    previewCanvas.style.position = 'absolute';
+    previewCanvas.style.top = canvas.offsetTop + 'px';
+    previewCanvas.style.left = canvas.offsetLeft + 'px';
+    previewCanvas.style.pointerEvents = 'none';
+    previewCanvas.style.zIndex = '10';
+    
+    container.style.position = 'relative';
+    container.appendChild(previewCanvas);
+    
+    previewCtx = previewCanvas.getContext('2d');
+}
+
+function drawLinePreview(startX, startY, endX, endY) {
+    if (!previewCanvas || !previewCtx) return;
+    
+    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    
+    const canvas = document.getElementById(CANVAS_ID);
+    const gridWidth = parseInt(document.getElementById("gridWidth").value);
+    const gridHeight = parseInt(document.getElementById("gridHeight").value);
+    
+    const cellWidth = canvas.width / gridWidth;
+    const cellHeight = canvas.height / gridHeight;
+    
+    const canvasStartX = (startX + 0.5) * cellWidth;
+    const canvasStartY = (gridHeight - startY - 0.5) * cellHeight;
+    const canvasEndX = (endX + 0.5) * cellWidth;
+    const canvasEndY = (gridHeight - endY - 0.5) * cellHeight;
+    
+    previewCtx.strokeStyle = '#00ff41';
+    previewCtx.lineWidth = 2;
+    previewCtx.setLineDash([5, 5]);
+    previewCtx.beginPath();
+    previewCtx.moveTo(canvasStartX, canvasStartY);
+    previewCtx.lineTo(canvasEndX, canvasEndY);
+    previewCtx.stroke();
+}
+
+function clearLinePreview() {
+    if (previewCtx) {
+        previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    }
+    isPreviewActive = false;
 }
 
 function getCanvasCoordinates(canvas, clientX, clientY) {
@@ -121,14 +212,15 @@ function handleCanvasMouseDown(e) {
 }
 
 function handleCanvasMouseMove(e) {
-    if (!gameOfLife || !isDrawing) return;
+    if (!gameOfLife) return;
     
     const canvas = document.getElementById(CANVAS_ID);
     const { cellX, cellY } = getCanvasCoordinates(canvas, e.clientX, e.clientY);
     
-    if (drawMode === "line" && lastDrawPos) {
-        // Preview line (in real implementation, you'd want to show a preview)
-    } else if (drawMode === "brush") {
+    if (drawMode === "line" && isDrawing && lastDrawPos) {
+        drawLinePreview(lastDrawPos.x, lastDrawPos.y, cellX, cellY);
+        isPreviewActive = true;
+    } else if (drawMode === "brush" && isDrawing) {
         drawBrush(cellX, cellY);
         gameOfLife.render();
         lastDrawPos = { x: cellX, y: cellY };
@@ -142,6 +234,7 @@ function handleCanvasMouseUp(e) {
     const { cellX, cellY } = getCanvasCoordinates(canvas, e.clientX, e.clientY);
     
     if (drawMode === "line" && lastDrawPos) {
+        clearLinePreview();
         gameOfLife.draw_line(lastDrawPos.x, lastDrawPos.y, cellX, cellY);
         gameOfLife.render();
     }
@@ -303,19 +396,64 @@ function clear() {
 }
 
 function resizeGrid() {
-    const gridWidth = parseInt(document.getElementById("gridWidth").value);
-    const gridHeight = parseInt(document.getElementById("gridHeight").value);
+    const gridWidthInput = document.getElementById("gridWidth");
+    const gridHeightInput = document.getElementById("gridHeight");
+    const gridWidth = parseInt(gridWidthInput.value);
+    const gridHeight = parseInt(gridHeightInput.value);
+    
+    gridWidthInput.blur();
+    gridHeightInput.blur();
     
     if (!gameOfLife || gridWidth < GRID_MIN_SIZE || gridHeight < GRID_MIN_SIZE || gridWidth > GRID_MAX_SIZE || gridHeight > GRID_MAX_SIZE) {
-        alert("Grid dimensions must be between 10 and 2000\n\nNote: Very large grids (>1000) may impact performance depending on your hardware.");
+        const warningElement = document.createElement('div');
+        warningElement.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        `;
+        warningElement.textContent = `Invalid dimensions (${gridWidth}x${gridHeight}). Restoring previous values (${lastValidGridWidth}x${lastValidGridHeight}).`;
+        document.body.appendChild(warningElement);
+        
+        setTimeout(() => {
+            if (document.body.contains(warningElement)) {
+                document.body.removeChild(warningElement);
+            }
+        }, 3000);
+        
+        gridWidthInput.value = lastValidGridWidth;
+        gridHeightInput.value = lastValidGridHeight;
+        
+        setTimeout(() => {
+            resizeGrid();
+        }, 500);
+        
         return;
     }
     
     try {
+        lastValidGridWidth = gridWidth;
+        lastValidGridHeight = gridHeight;
+        
         gameOfLife.resize(gridWidth, gridHeight);
         gameOfLife.render();
         generation = 0;
         updateStats();
+
+        if (previewCanvas) {
+            const canvas = document.getElementById(CANVAS_ID);
+            previewCanvas.width = canvas.width;
+            previewCanvas.height = canvas.height;
+        }
+        
         console.log(`Grid resized to ${gridWidth}x${gridHeight}`);
     } catch (error) {
         console.error("Error resizing grid:", error);
