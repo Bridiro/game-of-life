@@ -289,11 +289,7 @@ impl GameOfLife {
             return Ok(());
         }
 
-        // Read current cell state first
-        let current_state = self.get_cell_state(x, y)?;
-        let new_state = if current_state > 128 { 0u8 } else { 255u8 };
-
-        self.set_cell(x, y, new_state)?;
+        self.set_cell(x, y, 255)?;
         Ok(())
     }
 
@@ -359,17 +355,6 @@ impl GameOfLife {
         }
 
         Ok(())
-    }
-
-    #[wasm_bindgen]
-    pub fn get_cell_state(&self, x: u32, y: u32) -> Result<u8, JsValue> {
-        if x >= self.width || y >= self.height {
-            return Ok(0);
-        }
-
-        // For WebGL, we'll approximate by returning 255 for "likely alive" based on texture data
-        // This is a simplification since reading back from GPU is expensive
-        Ok(255) // We'll handle this differently in JavaScript for better UX
     }
 
     #[wasm_bindgen]
