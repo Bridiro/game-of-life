@@ -1,5 +1,8 @@
 import init, { GameOfLife } from "./pkg/game_of_life.js";
 
+const GRID_MIN_SIZE = 10;
+const GRID_MAX_SIZE = 2000;
+const BRUSH_CURSOR_SVG = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\"><circle cx=\"10\" cy=\"10\" r=\"8\" fill=\"none\" stroke=\"%2300ff41\" stroke-width=\"2\"/></svg>') 10 10, crosshair";
 const CANVAS_ID = "gameCanvas";
 let gameOfLife = null;
 let isPlaying = false;
@@ -9,8 +12,7 @@ let generation = 0;
 let fpsCounter = 0;
 let lastFpsTime = Date.now();
 
-// Drawing state
-let drawMode = "single"; // "single", "line", "brush"
+let drawMode = "single";
 let isDrawing = false;
 let lastDrawPos = null;
 let brushSize = 3;
@@ -39,34 +41,28 @@ async function run() {
 function setupEventListeners() {
     const canvas = document.getElementById(CANVAS_ID);
     
-    // Canvas mouse events
     canvas.addEventListener("mousedown", handleCanvasMouseDown);
     canvas.addEventListener("mousemove", handleCanvasMouseMove);
     canvas.addEventListener("mouseup", handleCanvasMouseUp);
     canvas.addEventListener("mouseleave", handleCanvasMouseUp);
     
-    // Touch events for mobile
     canvas.addEventListener("touchstart", handleCanvasTouchStart, { passive: false });
     canvas.addEventListener("touchmove", handleCanvasTouchMove, { passive: false });
     canvas.addEventListener("touchend", handleCanvasTouchEnd, { passive: false });
     
-    // Control buttons
     document.getElementById("playPause").addEventListener("click", togglePlayPause);
     document.getElementById("step").addEventListener("click", step);
     document.getElementById("randomize").addEventListener("click", randomize);
     document.getElementById("clear").addEventListener("click", clear);
     
-    // Drawing mode buttons
     document.querySelectorAll(".tool-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
             setDrawMode(e.target.dataset.mode);
         });
     });
     
-    // Grid controls
     document.getElementById("applyGridSize").addEventListener("click", resizeGrid);
     
-    // Pattern buttons
     document.getElementById("glider").addEventListener("click", loadGlider);
     document.getElementById("blinker").addEventListener("click", loadBlinker);
     document.getElementById("beacon").addEventListener("click", loadBeacon);
@@ -75,7 +71,6 @@ function setupEventListeners() {
     document.getElementById("pulsar").addEventListener("click", loadPulsar);
     document.getElementById("gliderGun").addEventListener("click", loadGliderGun);
     
-    // Speed and brush size sliders
     const speedSlider = document.getElementById("speed");
     const brushSlider = document.getElementById("brushSize");
     
@@ -90,7 +85,6 @@ function setupEventListeners() {
     });
 }
 
-// Canvas interaction functions
 function getCanvasCoordinates(canvas, clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -103,7 +97,6 @@ function getCanvasCoordinates(canvas, clientX, clientY) {
     const gridHeight = parseInt(document.getElementById("gridHeight").value);
     
     const cellX = Math.floor((x / canvas.width) * gridWidth);
-    // Fix Y-axis inversion - flip the Y coordinate
     const cellY = gridHeight - 1 - Math.floor((y / canvas.height) * gridHeight);
     
     return { cellX, cellY };
@@ -157,7 +150,6 @@ function handleCanvasMouseUp(e) {
     lastDrawPos = null;
 }
 
-// Touch event handlers
 function handleCanvasTouchStart(e) {
     e.preventDefault();
     const touch = e.touches[0];
@@ -198,16 +190,14 @@ function setDrawMode(mode) {
     drawMode = mode;
     document.getElementById("currentDrawMode").textContent = mode.toUpperCase();
     
-    // Update button states
     document.querySelectorAll(".tool-btn").forEach(btn => {
         btn.classList.remove("active");
     });
     document.querySelector(`[data-mode="${mode}"]`).classList.add("active");
     
-    // Update cursor
     const canvas = document.getElementById(CANVAS_ID);
     if (mode === "brush") {
-        canvas.style.cursor = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\"><circle cx=\"10\" cy=\"10\" r=\"8\" fill=\"none\" stroke=\"%2300ff41\" stroke-width=\"2\"/></svg>') 10 10, crosshair";
+        canvas.style.cursor = BRUSH_CURSOR_SVG;
     } else {
         canvas.style.cursor = "crosshair";
     }
@@ -222,7 +212,6 @@ function gameLoop() {
         generation++;
         updateStats();
         
-        // FPS counter
         fpsCounter++;
         const now = Date.now();
         if (now - lastFpsTime >= 1000) {
@@ -317,8 +306,7 @@ function resizeGrid() {
     const gridWidth = parseInt(document.getElementById("gridWidth").value);
     const gridHeight = parseInt(document.getElementById("gridHeight").value);
     
-    // Updated limits: 10 minimum for usability, 2000 maximum for WebGL texture limits and performance
-    if (!gameOfLife || gridWidth < 10 || gridHeight < 10 || gridWidth > 2000 || gridHeight > 2000) {
+    if (!gameOfLife || gridWidth < GRID_MIN_SIZE || gridHeight < GRID_MIN_SIZE || gridWidth > GRID_MAX_SIZE || gridHeight > GRID_MAX_SIZE) {
         alert("Grid dimensions must be between 10 and 2000\n\nNote: Very large grids (>1000) may impact performance depending on your hardware.");
         return;
     }
@@ -334,7 +322,6 @@ function resizeGrid() {
     }
 }
 
-// Pattern loaders
 function loadGlider() {
     if (!gameOfLife) return;
     try {
@@ -419,5 +406,4 @@ function loadGliderGun() {
     }
 }
 
-// Initialize the application
 run();
