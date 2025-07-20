@@ -3,7 +3,7 @@
 # Build and serve script for local development
 
 echo "Building WebAssembly..."
-wasm-pack build --target web
+wasm-pack build --target web --release
 
 echo "Copying files to web directory..."
 mkdir -p web/pkg

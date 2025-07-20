@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 use web_sys::{WebGlProgram, WebGlRenderingContext};
+
 use crate::webgl::create_shader;
 
 pub fn create_compute_program(gl: &WebGlRenderingContext) -> Result<WebGlProgram, JsValue> {
